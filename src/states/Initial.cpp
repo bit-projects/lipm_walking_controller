@@ -41,6 +41,10 @@ void states::Initial::configure(const mc_rtc::Configuration & config)
 void states::Initial::start()
 {
   auto & ctl = controller();
+  while(ctl.contacts().size())
+  {
+    ctl.removeContact(*ctl.contacts().begin());
+  }
 
   postureTaskIsActive_ = true;
   postureTaskWasActive_ = true;
