@@ -1418,7 +1418,7 @@ ObserverPipelines:
   observers:
     - type: Encoder
     - type: Attitude
-      required: false
+      required: true
     - type: KinematicInertial
       config:
         anchorFrame:
