@@ -1311,6 +1311,23 @@ plans:
         - pose:
             translation: [0.0, 0.105, 0.0]
           surface: LeftFootCenter
+    warmup:
+      double_support_duration: 0.1
+      single_support_duration: 0.7
+      swing_height: 0.04
+      contacts:
+        - pose:
+            translation: [0.0, -0.105, 0.0]
+          surface: RightFootCenter
+        - pose:
+            translation: [0.0, 0.105, 0.0]
+          surface: LeftFootCenter
+        - pose:
+            translation: [0.0, -0.105, 0.0]
+          surface: RightFootCenter
+        - pose:
+            translation: [0.0, 0.105, 0.0]
+          surface: LeftFootCenter
     custom_backward:
       double_support_duration: 0.2
       single_support_duration: 0.8
