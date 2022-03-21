@@ -81,8 +81,8 @@ robot_models:
       pitch: 0.0
   bit_xuanyuan:
     sole:
-      half_length: 0.11895
-      half_width: 0.069
+      half_length: 0.115
+      half_width: 0.072
       friction: 0.7
     torso:
       pitch: 0.0
@@ -1417,10 +1417,13 @@ ObserverPipelines:
   gui: true
   observers:
     - type: Encoder
-    - type: Attitude
-      required: true
+    #- type: Attitude
+    #  required: true
+    #  config:
+    #    imuSensor: Accelerometer
     - type: KinematicInertial
       config:
+        imuBodySensor: Accelerometer
         anchorFrame:
           maxAnchorFrameDiscontinuity: 0.02
     - type: BodySensor
