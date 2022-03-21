@@ -31,26 +31,6 @@
 #include <lipm_walking/Controller.h>
 #include <lipm_walking/utils/clamp.h>
 
-namespace
-{
-
-struct StabilizerHandle : public mc_tasks::lipm_stabilizer::StabilizerTask
-{
-  using mc_tasks::lipm_stabilizer::StabilizerTask::StabilizerTask;
-
-  std::shared_ptr<mc_tasks::OrientationTask> getPelvisTask()
-  {
-    return pelvisTask;
-  }
-
-  std::shared_ptr<mc_tasks::OrientationTask> getTorsoTask()
-  {
-    return torsoTask;
-  }
-};
-
-}
-
 using Color = mc_rtc::gui::Color;
 
 namespace lipm_walking
@@ -167,10 +147,8 @@ Controller::Controller(std::shared_ptr<mc_rbdyn::RobotModule> robotModule,
   }
   swingFootTaskRight_.reset(new mc_tasks::SurfaceTransformTask("RightFootCenter", robots(), robots().robotIndex(),
                                                                swingWeight, swingStiffness));
-  swingFootTaskRight_->selectUnactiveJoints({"R_hip_1"});
   swingFootTaskLeft_.reset(new mc_tasks::SurfaceTransformTask("LeftFootCenter", robots(), robots().robotIndex(),
                                                               swingWeight, swingStiffness));
-  swingFootTaskLeft_->selectUnactiveJoints({"L_hip_1"});
 
   addLogEntries(logger());
   mpc_.addLogEntries(logger());
@@ -385,20 +363,6 @@ bool Controller::run()
   warnIfRobotIsInTheAir();
 
   bool ret = mc_control::fsm::Controller::run();
-  if(stabilizer_->iterInSolver() != 0)
-  {
-    static std::shared_ptr<mc_tasks::OrientationTask> l_hip_1_ori = std::make_shared<mc_tasks::OrientationTask>("L_hip_1", robots(), 0, 10.0, 100.0);
-    static std::shared_ptr<mc_tasks::OrientationTask> r_hip_1_ori = std::make_shared<mc_tasks::OrientationTask>("R_hip_1", robots(), 0, 10.0, 100.0);
-    auto handle = static_cast<StabilizerHandle &>(*stabilizer());
-    static bool first_time = [&,this]() {
-      solver().addTask(l_hip_1_ori);
-      solver().addTask(r_hip_1_ori);
-      solver().removeTask(handle.getTorsoTask());
-      return true;
-    }();
-    l_hip_1_ori->orientation(sva::RotZ(M_PI / 2) * sva::RotX(M_PI) * handle.getPelvisTask()->orientation());
-    r_hip_1_ori->orientation(sva::RotZ(M_PI / 2) * sva::RotX(M_PI) * handle.getPelvisTask()->orientation());
-  }
   // if(mc_control::fsm::Controller::running())
   //{
   //  postureTask->posture(halfSitPose); // reset posture in case the FSM updated it
